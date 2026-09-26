@@ -8,9 +8,9 @@ from models import db, User, Setting, DEFAULT_SETTINGS
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to continue."
+app = Flask(__name__)
 
 def create_app():
-    app = Flask(__name__)
     app.config.from_object(Config)
 
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
