@@ -1,0 +1,32 @@
+body {
+  background-image:
+    linear-gradient(rgba(57, 255, 157, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 157, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-color: #0a0e14;
+}
+
+.glow-border {
+  box-shadow: 0 0 0 1px rgba(57, 255, 157, 0.15), 0 0 24px rgba(57, 255, 157, 0.06);
+}
+
+.glow-text {
+  text-shadow: 0 0 12px rgba(57, 255, 157, 0.5);
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #121824; }
+::-webkit-scrollbar-thumb { background: #232b3d; border-radius: 4px; }
+
+.card-hover { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(57, 255, 157, 0.12); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+.badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 9999px; font-weight: 600; letter-spacing: 0.03em; }

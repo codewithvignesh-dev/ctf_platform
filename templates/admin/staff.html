@@ -1,0 +1,27 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Staff{% endblock %}
+{% block admin_content %}
+<h1 class="text-2xl font-bold text-white mb-6">Staff / Invigilators</h1>
+
+<form method="POST" class="bg-panel border border-border rounded-2xl p-6 mb-8 max-w-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
+  <input type="text" name="name" placeholder="Full name" class="bg-panel2 border border-border rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-neon">
+  <input type="text" name="username" required placeholder="Username" class="bg-panel2 border border-border rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-neon">
+  <input type="text" name="password" required placeholder="Password" class="bg-panel2 border border-border rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-neon">
+  <button class="sm:col-span-3 bg-neon text-bg font-bold py-2.5 rounded-lg hover:brightness-110">Create Staff Account</button>
+</form>
+
+<div class="bg-panel border border-border rounded-2xl overflow-hidden max-w-lg">
+  <table class="w-full text-sm">
+    <thead class="bg-panel2 text-slate-400 uppercase text-xs">
+      <tr><th class="text-left px-5 py-3">Name</th><th class="text-left px-5 py-3">Username</th></tr>
+    </thead>
+    <tbody>
+      {% for s in staff_list %}
+      <tr class="border-t border-border"><td class="px-5 py-3 text-white">{{ s.name }}</td><td class="px-5 py-3 mono text-slate-400">{{ s.username }}</td></tr>
+      {% else %}
+      <tr><td colspan="2" class="text-center text-slate-500 py-8">No staff accounts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

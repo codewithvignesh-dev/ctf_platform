@@ -1,0 +1,72 @@
+{% extends "admin/_layout.html" %}
+{% block title %}New {{ ctype.upper() }} Challenge{% endblock %}
+{% block admin_content %}
+<a href="{{ url_for('admin.challenges') }}" class="text-slate-500 hover:text-neon text-sm">&larr; Back to challenges</a>
+<h1 class="text-2xl font-bold text-white mt-3 mb-6">New {{ ctype.upper() }} Challenge</h1>
+
+<form method="POST" enctype="multipart/form-data" class="bg-panel border border-border rounded-2xl p-6 max-w-2xl space-y-5">
+  <div>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Title</label>
+    <input type="text" name="title" required class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon">
+  </div>
+
+  <div>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Description</label>
+    <textarea name="description" rows="3" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon"></textarea>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Points</label>
+      <input type="number" name="points" value="100" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon">
+    </div>
+    {% if ctype == 'mcq' %}
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Per-question timer (seconds)</label>
+      <input type="number" name="time_limit_seconds" value="30" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon">
+    </div>
+    {% endif %}
+  </div>
+
+  {% if ctype == 'ctf' %}
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Flag</label>
+      <input type="text" name="flag" required placeholder="flag{example_flag}" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 mono text-white focus:outline-none focus:border-neon">
+    </div>
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Attachment (optional)</label>
+      <input type="file" name="attachment" class="text-sm text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-panel2 file:text-slate-300">
+    </div>
+  {% elif ctype == 'debug' %}
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Language</label>
+      <input type="text" name="language" placeholder="C++" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon">
+    </div>
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Buggy Code</label>
+      <textarea name="buggy_code" rows="8" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 mono text-sm text-white focus:outline-none focus:border-neon"></textarea>
+    </div>
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Expected Output / Correct Answer</label>
+      <input type="text" name="expected_output" required class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 mono text-white focus:outline-none focus:border-neon">
+    </div>
+  {% endif %}
+
+  <div>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Visible to Categories</label>
+    <div class="flex flex-wrap gap-3">
+      {% for c in categories %}
+        <label class="flex items-center gap-2 bg-panel2 border border-border rounded-lg px-3 py-2 text-sm text-slate-300">
+          <input type="checkbox" name="category_ids" value="{{ c.id }}" class="accent-emerald-400"> {{ c.name }}
+        </label>
+      {% else %}
+        <p class="text-slate-500 text-sm">No categories yet — create one first from the Categories page.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <button class="bg-neon text-bg font-bold px-6 py-3 rounded-lg hover:brightness-110">
+    {{ 'Create & Add Questions' if ctype == 'mcq' else 'Create Challenge' }}
+  </button>
+</form>
+{% endblock %}

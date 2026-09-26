@@ -1,0 +1,47 @@
+{% extends "admin/_layout.html" %}
+{% block title %}{{ challenge.title }} - Questions{% endblock %}
+{% block admin_content %}
+<a href="{{ url_for('admin.challenges') }}" class="text-slate-500 hover:text-neon text-sm">&larr; Back to challenges</a>
+<h1 class="text-2xl font-bold text-white mt-3 mb-6">{{ challenge.title }} &middot; Questions ({{ questions|length }})</h1>
+
+<form method="POST" class="bg-panel border border-border rounded-2xl p-6 mb-8 max-w-2xl space-y-4">
+  <div>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Question</label>
+    <textarea name="question_text" required rows="2" class="w-full bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon"></textarea>
+  </div>
+
+  <div>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Options (select the correct one)</label>
+    <div class="space-y-2">
+      {% for i in range(4) %}
+        <div class="flex items-center gap-3">
+          <input type="radio" name="correct_index" value="{{ i }}" required class="accent-emerald-400">
+          <input type="text" name="option_text" placeholder="Option {{ i + 1 }}" class="flex-1 bg-panel2 border border-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-neon">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-xs uppercase tracking-wider text-slate-400 mb-2">Points</label>
+    <input type="number" name="points" value="10" class="w-32 bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-neon">
+  </div>
+
+  <button class="bg-neon text-bg font-bold px-6 py-2.5 rounded-lg hover:brightness-110">Add Question</button>
+</form>
+
+<div class="space-y-3 max-w-2xl">
+  {% for q in questions %}
+    <div class="bg-panel border border-border rounded-xl p-4">
+      <p class="text-white text-sm mb-2">{{ loop.index }}. {{ q.question_text }}</p>
+      <div class="text-xs space-y-1">
+        {% for o in q.options %}
+          <div class="{{ 'text-neon' if o.is_correct else 'text-slate-500' }}">{{ '✔' if o.is_correct else '·' }} {{ o.option_text }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <p class="text-slate-500 text-sm">No questions added yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ challenge.title }}{% endblock %}
+{% block body %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+  <a href="{{ url_for('student.event_home') }}" class="text-slate-500 hover:text-neon text-sm">&larr; Back to challenges</a>
+
+  <div class="bg-panel border border-border rounded-2xl p-8 mt-4">
+    <div class="flex items-center justify-between mb-4">
+      <span class="badge {{ 'bg-neon2/10 text-neon2 border border-neon2' if challenge.type=='ctf' else 'bg-warn/10 text-warn border border-warn' }}">
+        {{ challenge.type.upper() }}
+      </span>
+      <span class="mono text-slate-500 text-sm">{{ challenge.points }} pts</span>
+    </div>
+
+    <h1 class="text-2xl font-bold text-white mb-3">{{ challenge.title }}</h1>
+    <p class="text-slate-400 whitespace-pre-line mb-6">{{ challenge.description }}</p>
+
+    {% if challenge.type == 'debug' and challenge.buggy_code %}
+      <div class="mb-6">
+        <div class="text-xs uppercase tracking-wider text-slate-500 mb-2">Buggy Code ({{ challenge.language or 'code' }})</div>
+        <pre class="bg-panel2 border border-border rounded-lg p-4 mono text-sm text-slate-300 overflow-x-auto">{{ challenge.buggy_code }}</pre>
+      </div>
+    {% endif %}
+
+    {% if challenge.type == 'ctf' and challenge.attachment_path %}
+      <a href="{{ url_for('student.download_attachment', challenge_id=challenge.id) }}"
+        class="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-panel2 border border-border rounded-lg text-neon2 text-sm hover:border-neon2">
+        ⬇ Download Attachment
+      </a>
+    {% endif %}
+
+    {% if already_solved %}
+      <div class="bg-neon/10 border border-neon text-neon rounded-lg p-4 text-center font-semibold">
+        ✔ Already solved &middot; +{{ already_solved.points_awarded }} pts
+      </div>
+    {% else %}
+      {% if result == "correct" %}
+        <div class="bg-neon/10 border border-neon text-neon rounded-lg p-4 mb-4 text-center font-semibold">✔ Correct! Points awarded.</div>
+      {% elif result == "incorrect" %}
+        <div class="bg-danger/10 border border-danger text-danger rounded-lg p-4 mb-4 text-center font-semibold">✘ Incorrect. Try again.</div>
+      {% endif %}
+
+      <form method="POST" class="flex gap-3">
+        <input type="text" name="answer" required autocomplete="off"
+          placeholder="{{ 'flag{...}' if challenge.type == 'ctf' else 'Your fixed / expected output' }}"
+          class="flex-1 bg-panel2 border border-border rounded-lg px-4 py-3 mono text-white focus:outline-none focus:border-neon">
+        <button class="bg-neon text-bg font-bold px-6 rounded-lg hover:brightness-110">Submit</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/anticheat.js') }}"></script>
+{% endblock %}

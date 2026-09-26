@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ challenge.title }} - MCQ{% endblock %}
+{% block body %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-white">{{ challenge.title }}</h1>
+      <p class="text-slate-500 text-sm mono">Question {{ total_count - remaining_count + 1 }} of {{ total_count }}</p>
+    </div>
+    <div id="timer" class="mono text-2xl font-bold text-neon glow-text">{{ time_limit }}</div>
+  </div>
+
+  <div class="w-full bg-panel2 h-1.5 rounded-full mb-8 overflow-hidden">
+    <div id="timer-bar" class="h-full bg-neon transition-all" style="width: 100%"></div>
+  </div>
+
+  <div class="bg-panel border border-border rounded-2xl p-8">
+    <p class="text-lg text-white mb-6">{{ question.question_text }}</p>
+
+    <form id="mcq-form" method="POST" action="{{ url_for('student.mcq_answer', challenge_id=challenge.id) }}">
+      <input type="hidden" name="question_id" value="{{ question.id }}">
+      <input type="hidden" id="option_id_input" name="option_id" value="">
+
+      <div class="space-y-3">
+        {% for opt in options %}
+          <button type="button" onclick="selectOption({{ opt.id }}, this)"
+            class="option-btn w-full text-left px-4 py-3 bg-panel2 border border-border rounded-lg text-slate-200 hover:border-neon2 transition">
+            {{ opt.option_text }}
+          </button>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="w-full mt-6 bg-neon text-bg font-bold py-3 rounded-lg hover:brightness-110">
+        Submit Answer
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/anticheat.js') }}"></script>
+<script>
+  let selected = null;
+  function selectOption(id, btn) {
+    selected = id;
+    document.getElementById("option_id_input").value = id;
+    document.querySelectorAll(".option-btn").forEach((b) => b.classList.remove("border-neon", "bg-neon/10"));
+    btn.classList.add("border-neon", "bg-neon/10");
+  }
+
+  let timeLeft = {{ time_limit }};
+  const totalTime = {{ time_limit }};
+  const timerEl = document.getElementById("timer");
+  const barEl = document.getElementById("timer-bar");
+  const form = document.getElementById("mcq-form");
+  let submitted = false;
+
+  const interval = setInterval(() => {
+    timeLeft -= 1;
+    timerEl.textContent = timeLeft;
+    barEl.style.width = Math.max(0, (timeLeft / totalTime) * 100) + "%";
+    if (timeLeft <= 5) timerEl.classList.add("text-danger");
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      if (!submitted) {
+        submitted = true;
+        form.submit(); // auto-submits (with no option selected if none chosen)
+      }
+    }
+  }, 1000);
+
+  form.addEventListener("submit", () => { submitted = true; clearInterval(interval); });
+</script>
+{% endblock %}

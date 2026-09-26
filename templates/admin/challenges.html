@@ -1,0 +1,51 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Challenges{% endblock %}
+{% block admin_content %}
+<div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+  <h1 class="text-2xl font-bold text-white">Challenges</h1>
+  <div class="flex gap-2">
+    <a href="{{ url_for('admin.new_challenge', ctype='ctf') }}" class="bg-neon2/10 border border-neon2 text-neon2 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-neon2/20">+ CTF</a>
+    <a href="{{ url_for('admin.new_challenge', ctype='mcq') }}" class="bg-accent/10 border border-accent text-accent px-4 py-2 rounded-lg text-sm font-semibold hover:bg-accent/20">+ MCQ Set</a>
+    <a href="{{ url_for('admin.new_challenge', ctype='debug') }}" class="bg-warn/10 border border-warn text-warn px-4 py-2 rounded-lg text-sm font-semibold hover:bg-warn/20">+ Debugging</a>
+  </div>
+</div>
+
+<div class="bg-panel border border-border rounded-2xl overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-panel2 text-slate-400 uppercase text-xs">
+      <tr>
+        <th class="text-left px-5 py-3">Title</th><th class="text-left px-5 py-3">Type</th>
+        <th class="text-left px-5 py-3">Categories</th><th class="text-right px-5 py-3">Points</th>
+        <th class="text-left px-5 py-3">Status</th><th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in challenges %}
+      <tr class="border-t border-border">
+        <td class="px-5 py-3 text-white">{{ c.title }}</td>
+        <td class="px-5 py-3 uppercase text-xs mono text-slate-400">{{ c.type }}</td>
+        <td class="px-5 py-3 text-slate-400 text-xs">{{ c.categories|map(attribute='name')|join(', ') or '-' }}</td>
+        <td class="px-5 py-3 text-right mono">{{ c.points }}</td>
+        <td class="px-5 py-3">
+          {% if c.is_active %}<span class="badge bg-neon/10 text-neon border border-neon">ACTIVE</span>
+          {% else %}<span class="badge bg-slate-500/10 text-slate-500 border border-slate-600">HIDDEN</span>{% endif %}
+        </td>
+        <td class="px-5 py-3 text-right whitespace-nowrap">
+          {% if c.type == 'mcq' %}
+          <a href="{{ url_for('admin.mcq_questions', challenge_id=c.id) }}" class="text-neon2 text-xs underline mr-3">Questions</a>
+          {% endif %}
+          <form method="POST" action="{{ url_for('admin.toggle_challenge_active', challenge_id=c.id) }}" class="inline">
+            <button class="text-slate-400 text-xs underline mr-3">{{ 'Hide' if c.is_active else 'Show' }}</button>
+          </form>
+          <form method="POST" action="{{ url_for('admin.delete_challenge', challenge_id=c.id) }}" class="inline" onsubmit="return confirm('Delete this challenge?')">
+            <button class="text-danger text-xs underline">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="text-center text-slate-500 py-8">No challenges created yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

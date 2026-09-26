@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Result - {{ challenge.title }}{% endblock %}
+{% block body %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <h1 class="text-xl font-bold text-white mb-6">{{ challenge.title }} &middot; Result</h1>
+
+  {% if video_url %}
+    <div id="video-stage">
+      <div class="aspect-video w-full rounded-xl overflow-hidden border border-border mb-4">
+        <div id="yt-player" class="w-full h-full"></div>
+      </div>
+      <p class="text-slate-500 text-sm text-center">Your result will appear once the video finishes...</p>
+      <div class="text-center mt-4">
+        <button onclick="revealResult()" class="text-slate-500 hover:text-neon text-sm underline">Skip</button>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if bgm_url %}
+    <div id="yt-bgm" class="hidden"></div>
+  {% endif %}
+
+  <div id="result-stage" class="bg-panel border border-border rounded-2xl p-8 text-center {{ 'hidden' if video_url else '' }}">
+    <div class="text-5xl font-bold text-neon glow-text mb-2">{{ score }}</div>
+    <p class="text-slate-400 mb-6">points scored</p>
+    <p class="text-white text-lg">{{ correct_count }} / {{ total }} correct</p>
+    <a href="{{ url_for('student.event_home') }}" class="inline-block mt-8 bg-neon text-bg font-bold px-6 py-3 rounded-lg hover:brightness-110">
+      Back to Challenges
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/anticheat.js') }}"></script>
+{% if video_url or bgm_url %}
+<script>
+  function extractYouTubeId(url) {
+    const match = url.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : null;
+  }
+
+  function revealResult() {
+    const videoStage = document.getElementById("video-stage");
+    const resultStage = document.getElementById("result-stage");
+    if (videoStage) videoStage.classList.add("hidden");
+    resultStage.classList.remove("hidden");
+  }
+
+  let ytApiReady = false;
+  window.onYouTubeIframeAPIReady = function () {
+    ytApiReady = true;
+    {% if video_url %}
+      const videoId = extractYouTubeId("{{ video_url }}");
+      if (videoId) {
+        new YT.Player("yt-player", {
+          videoId: videoId,
+          playerVars: { autoplay: 1, controls: 1, rel: 0 },
+          events: { onStateChange: (e) => { if (e.data === YT.PlayerState.ENDED) revealResult(); } },
+        });
+      } else {
+        revealResult();
+      }
+    {% endif %}
+    {% if bgm_url %}
+      const bgmId = extractYouTubeId("{{ bgm_url }}");
+      if (bgmId) {
+        new YT.Player("yt-bgm", { videoId: bgmId, playerVars: { autoplay: 1, loop: 1, controls: 0 } });
+      }
+    {% endif %}
+  };
+
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.body.appendChild(tag);
+
+  {% if not video_url %}
+    // No video set -> straight to results
+  {% endif %}
+</script>
+{% endif %}
+{% endblock %}

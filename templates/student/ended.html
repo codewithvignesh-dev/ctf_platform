@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Event Ended{% endblock %}
+{% block body %}
+<div class="min-h-screen flex items-center justify-center text-center px-4">
+  <div>
+    <h1 class="text-3xl font-bold text-white mb-2">Event Has Ended</h1>
+    <p class="text-slate-400 mb-8">Thanks for participating, {{ current_user.name }}!</p>
+    <a href="{{ url_for('student.scoreboard') }}" class="bg-neon text-bg font-bold px-6 py-3 rounded-lg hover:brightness-110">View Final Scoreboard</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Challenges{% endblock %}
+{% block body %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Challenge Arena</h1>
+      <p class="text-slate-400 text-sm mono">{{ current_user.category.name if current_user.category else 'Unassigned' }} &middot; {{ current_user.name }}</p>
+    </div>
+    <div class="flex items-center gap-3">
+      {% if event_status == 'paused' %}
+        <span class="badge bg-warn/10 text-warn border border-warn">EVENT PAUSED</span>
+      {% else %}
+        <span class="badge bg-neon/10 text-neon border border-neon">LIVE</span>
+      {% endif %}
+      <a href="{{ url_for('student.scoreboard') }}" class="text-sm text-neon2 hover:underline">Scoreboard</a>
+      <a href="{{ url_for('auth.logout') }}" class="text-sm text-slate-500 hover:text-slate-300">Logout</a>
+    </div>
+  </div>
+
+  {% if event_status == 'paused' %}
+    <div class="bg-warn/10 border border-warn text-warn rounded-xl p-6 text-center mb-8">
+      The event has been paused by the admin. Please wait for it to resume.
+    </div>
+  {% endif %}
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for c in challenges %}
+      {% set solved = c.id in solved_ids %}
+      <a href="{{ url_for('student.mcq_start', challenge_id=c.id) if c.type == 'mcq' else url_for('student.challenge_detail', challenge_id=c.id) }}"
+        class="card-hover block bg-panel border {{ 'border-neon/50' if solved else 'border-border' }} rounded-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="badge {{ 'bg-neon2/10 text-neon2 border border-neon2' if c.type=='ctf' else ('bg-accent/10 text-accent border border-accent' if c.type=='mcq' else 'bg-warn/10 text-warn border border-warn') }}">
+            {{ c.type.upper() }}
+          </span>
+          {% if solved %}<span class="text-neon text-sm">✔ Solved</span>{% endif %}
+        </div>
+        <h3 class="text-white font-semibold mb-1">{{ c.title }}</h3>
+        <p class="text-slate-500 text-sm line-clamp-2">{{ c.description[:80] if c.description }}</p>
+        <div class="mt-4 text-xs mono text-slate-500">{{ c.points }} pts</div>
+      </a>
+    {% else %}
+      <p class="text-slate-500 col-span-3 text-center py-16">No challenges assigned to your category yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% if chat_enabled %}
+<div id="chat-widget" class="fixed bottom-4 right-4 w-80 bg-panel border border-border rounded-xl overflow-hidden shadow-2xl z-40">
+  <div class="bg-panel2 px-4 py-2 text-sm font-semibold text-white flex justify-between items-center">
+    <span>Event Chat</span>
+  </div>
+  <div id="chat-messages" class="h-56 overflow-y-auto px-3 py-2 text-xs space-y-1 mono"></div>
+  <form id="chat-form" class="flex border-t border-border">
+    <input id="chat-input" class="flex-1 bg-panel2 px-3 py-2 text-sm text-white focus:outline-none" placeholder="Type a message...">
+    <button class="px-4 text-neon font-semibold text-sm">Send</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/anticheat.js') }}"></script>
+{% if chat_enabled %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endif %}
+<script>
+  async function pollPause() {
+    try {
+      const res = await fetch("/api/event-status");
+      const data = await res.json();
+      if (data.status === "waiting") window.location.href = "{{ url_for('student.waiting_room') }}";
+      if (data.status === "ended") window.location.reload();
+      if (data.status !== "{{ event_status }}") window.location.reload();
+    } catch (e) {}
+  }
+  setInterval(pollPause, 5000);
+</script>
+{% endblock %}

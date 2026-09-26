@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div class="text-white font-bold text-lg">CTF<span class="text-neon">//</span>STAFF</div>
+    <nav class="flex gap-4 text-sm">
+      <a href="{{ url_for('staff.dashboard') }}" class="text-slate-300 hover:text-neon">Live Monitor</a>
+      <a href="{{ url_for('staff.violations') }}" class="text-slate-300 hover:text-neon">Violations</a>
+      <a href="{{ url_for('staff.chat_monitor') }}" class="text-slate-300 hover:text-neon">Chat</a>
+      <a href="{{ url_for('auth.logout') }}" class="text-slate-500 hover:text-slate-300">Logout</a>
+    </nav>
+  </div>
+  {% block staff_content %}{% endblock %}
+</div>
+{% endblock %}

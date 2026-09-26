@@ -1,0 +1,22 @@
+{% extends "staff/_layout.html" %}
+{% block title %}Chat Monitor{% endblock %}
+{% block staff_content %}
+<h1 class="text-xl font-bold text-white mb-5">Event Chat {{ '(Enabled)' if chat_enabled else '(Disabled)' }}</h1>
+<div class="bg-panel border border-border rounded-2xl p-5 max-w-2xl">
+  <div id="chat-log" class="space-y-2 text-sm mono max-h-96 overflow-y-auto"></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  async function loadMessages() {
+    const res = await fetch("/api/chat/messages");
+    const data = await res.json();
+    const log = document.getElementById("chat-log");
+    log.innerHTML = data.messages.map(m =>
+      `<div><span class="text-neon2">[${m.time}] ${m.user} (${m.role}):</span> ${m.message}</div>`
+    ).join("") || '<p class="text-slate-500">No messages yet.</p>';
+  }
+  loadMessages();
+  setInterval(loadMessages, 4000);
+</script>
+{% endblock %}

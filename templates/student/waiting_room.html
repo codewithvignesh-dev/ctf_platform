@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Waiting Room{% endblock %}
+{% block body %}
+<div class="min-h-screen flex items-center justify-center px-4 text-center">
+  <div>
+    <div class="w-20 h-20 rounded-full border-4 border-neon/30 border-t-neon animate-spin mx-auto mb-8"></div>
+    <h1 class="text-3xl font-bold text-white mb-2">Welcome, {{ current_user.name }}</h1>
+    <p class="text-slate-400 mono">Register No: {{ current_user.reg_number }} &middot; {{ current_user.category.name if current_user.category else 'Unassigned' }}</p>
+    <p class="text-neon mt-6 text-lg glow-text">You're in the waiting room.</p>
+    <p class="text-slate-500 mt-1">The event will start automatically once the admin goes live. Do not close this tab.</p>
+    <a href="{{ url_for('auth.logout') }}" class="inline-block mt-8 text-slate-500 hover:text-slate-300 text-sm underline">Logout</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function pollStatus() {
+    try {
+      const res = await fetch("/api/event-status");
+      const data = await res.json();
+      if (data.status === "live") {
+        window.location.href = "{{ url_for('student.event_home') }}";
+      }
+    } catch (e) {}
+  }
+  setInterval(pollStatus, 3000);
+</script>
+{% endblock %}

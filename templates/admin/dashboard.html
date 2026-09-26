@@ -1,0 +1,27 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block admin_content %}
+<h1 class="text-2xl font-bold text-white mb-6">Dashboard</h1>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+  {% for label, value in [("Students", stats.students), ("Staff", stats.staff), ("Challenges", stats.challenges), ("Categories", stats.categories), ("Blocked", stats.blocked)] %}
+    <div class="bg-panel border border-border rounded-xl p-5">
+      <div class="text-3xl font-bold text-neon mono">{{ value }}</div>
+      <div class="text-slate-500 text-sm mt-1">{{ label }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="bg-panel border border-border rounded-2xl p-6">
+  <h2 class="text-lg font-semibold text-white mb-1">Event Control</h2>
+  <p class="text-slate-500 text-sm mb-5">Current status: <span class="mono text-neon font-bold">{{ event_status.upper() }}</span></p>
+
+  <form method="POST" action="{{ url_for('admin.set_event_status') }}" class="flex flex-wrap gap-3">
+    <button name="status" value="waiting" class="px-5 py-2.5 rounded-lg border border-border text-slate-300 hover:border-slate-500">⏸ Wait Room</button>
+    <button name="status" value="live" class="px-5 py-2.5 rounded-lg bg-neon text-bg font-bold hover:brightness-110">▶ Go Live</button>
+    <button name="status" value="paused" class="px-5 py-2.5 rounded-lg bg-warn/10 border border-warn text-warn hover:bg-warn/20">⏸ Pause</button>
+    <button name="status" value="live" class="px-5 py-2.5 rounded-lg bg-neon2/10 border border-neon2 text-neon2 hover:bg-neon2/20">⏵ Resume</button>
+    <button name="status" value="ended" class="px-5 py-2.5 rounded-lg bg-danger/10 border border-danger text-danger hover:bg-danger/20">■ End Event</button>
+  </form>
+</div>
+{% endblock %}

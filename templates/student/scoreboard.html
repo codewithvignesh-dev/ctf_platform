@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Scoreboard{% endblock %}
+{% block body %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+  <a href="{{ url_for('student.event_home') }}" class="text-slate-500 hover:text-neon text-sm">&larr; Back to challenges</a>
+
+  <div class="flex items-center justify-between mt-4 mb-6">
+    <h1 class="text-2xl font-bold text-white">Scoreboard &middot; {{ category.name if category else '-' }}</h1>
+    {% if frozen %}
+      <span class="badge bg-neon2/10 text-neon2 border border-neon2">FROZEN</span>
+    {% endif %}
+  </div>
+
+  {% if frozen %}
+    <p class="text-slate-500 text-sm mb-4">Live rankings are currently frozen by the admin. Standings shown may not reflect the latest scores.</p>
+  {% endif %}
+
+  <div class="bg-panel border border-border rounded-2xl overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-panel2 text-slate-400 uppercase text-xs">
+        <tr><th class="text-left px-5 py-3">Rank</th><th class="text-left px-5 py-3">Name</th><th class="text-left px-5 py-3">Reg No</th><th class="text-right px-5 py-3">Score</th></tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+          <tr class="border-t border-border {{ 'bg-neon/5' if s.id == current_user.id }}">
+            <td class="px-5 py-3 mono {{ 'text-neon font-bold' if loop.index <= 3 }}">#{{ loop.index }}</td>
+            <td class="px-5 py-3 text-white">{{ s.name }}</td>
+            <td class="px-5 py-3 mono text-slate-500">{{ s.reg_number }}</td>
+            <td class="px-5 py-3 text-right mono text-neon">{{ s.total_score or 0 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/anticheat.js') }}"></script>{% endblock %}

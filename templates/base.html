@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CTF Platform{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0a0e14',
+          panel: '#121824',
+          panel2: '#161d2b',
+          border: '#232b3d',
+          neon: '#39ff9d',
+          neon2: '#00d9ff',
+          accent: '#7c3aed',
+          danger: '#ff4d6d',
+          warn: '#ffb020',
+        },
+        fontFamily: {
+          sans: ['"Space Grotesk"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+</head>
+<body class="bg-bg text-slate-200 font-sans min-h-screen">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="fixed top-4 right-4 z-50 space-y-2 w-80">
+      {% for category, message in messages %}
+        <div class="px-4 py-3 rounded-lg border text-sm shadow-lg backdrop-blur
+          {{ 'bg-danger/10 border-danger text-danger' if category=='error' else 'bg-neon/10 border-neon text-neon' }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% block body %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

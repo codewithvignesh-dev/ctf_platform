@@ -1,0 +1,24 @@
+{% extends "staff/_layout.html" %}
+{% block title %}Violations{% endblock %}
+{% block staff_content %}
+<h1 class="text-xl font-bold text-white mb-5">Anti-Cheat Violations</h1>
+<div class="bg-panel border border-border rounded-2xl overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-panel2 text-slate-400 uppercase text-xs">
+      <tr><th class="text-left px-5 py-3">Time</th><th class="text-left px-5 py-3">Student</th><th class="text-left px-5 py-3">Type</th><th class="text-right px-5 py-3">Count</th></tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr class="border-t border-border">
+        <td class="px-5 py-3 mono text-slate-500 text-xs">{{ log.created_at.strftime('%H:%M:%S') }}</td>
+        <td class="px-5 py-3 text-white">{{ log.user.name }}</td>
+        <td class="px-5 py-3 uppercase text-xs text-warn">{{ log.violation_type }}</td>
+        <td class="px-5 py-3 text-right mono">{{ log.count_at_time }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-center text-slate-500 py-8">No violations recorded.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

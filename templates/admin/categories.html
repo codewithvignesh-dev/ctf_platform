@@ -1,0 +1,42 @@
+{% extends "admin/_layout.html" %}
+{% block title %}Categories{% endblock %}
+{% block admin_content %}
+<h1 class="text-2xl font-bold text-white mb-6">Categories</h1>
+
+<form method="POST" class="flex gap-3 mb-8 max-w-md">
+  <input type="text" name="name" required placeholder="e.g. 1st Year"
+    class="flex-1 bg-panel2 border border-border rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-neon">
+  <button class="bg-neon text-bg font-bold px-5 rounded-lg hover:brightness-110">Add</button>
+</form>
+
+<div class="bg-panel border border-border rounded-2xl overflow-hidden max-w-2xl">
+  <table class="w-full text-sm">
+    <thead class="bg-panel2 text-slate-400 uppercase text-xs">
+      <tr><th class="text-left px-5 py-3">Category</th><th class="text-left px-5 py-3">Scoreboard</th><th class="px-5 py-3"></th></tr>
+    </thead>
+    <tbody>
+      {% for c in categories %}
+      <tr class="border-t border-border">
+        <td class="px-5 py-3 text-white">{{ c.name }}</td>
+        <td class="px-5 py-3">
+          {% if c.scoreboard_frozen %}
+            <span class="badge bg-neon2/10 text-neon2 border border-neon2">FROZEN</span>
+          {% else %}
+            <span class="badge bg-neon/10 text-neon border border-neon">LIVE</span>
+          {% endif %}
+        </td>
+        <td class="px-5 py-3 text-right">
+          <form method="POST" action="{{ url_for('admin.toggle_freeze', category_id=c.id) }}">
+            <button class="text-slate-400 hover:text-neon2 text-xs underline">
+              {{ 'Unfreeze' if c.scoreboard_frozen else 'Freeze' }} Scoreboard
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="text-center text-slate-500 py-8">No categories yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

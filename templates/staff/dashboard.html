@@ -1,0 +1,55 @@
+{% extends "staff/_layout.html" %}
+{% block title %}Live Monitor{% endblock %}
+{% block staff_content %}
+<div class="flex items-center justify-between mb-5">
+  <h1 class="text-xl font-bold text-white">Live Student Monitor</h1>
+  <span id="status-badge" class="badge bg-neon/10 text-neon border border-neon">{{ event_status.upper() }}</span>
+</div>
+
+<div class="bg-panel border border-border rounded-2xl overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-panel2 text-slate-400 uppercase text-xs">
+      <tr>
+        <th class="text-left px-5 py-3">Name</th><th class="text-left px-5 py-3">Reg No</th>
+        <th class="text-left px-5 py-3">Category</th><th class="text-right px-5 py-3">Score</th>
+        <th class="text-right px-5 py-3">Solved</th><th class="text-right px-5 py-3">Violations</th>
+        <th class="text-left px-5 py-3">Status</th>
+      </tr>
+    </thead>
+    <tbody id="live-body">
+      <tr><td colspan="7" class="text-center text-slate-500 py-8">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function refresh() {
+    try {
+      const res = await fetch("/api/live-feed");
+      const data = await res.json();
+      document.getElementById("status-badge").textContent = data.event_status.toUpperCase();
+
+      const body = document.getElementById("live-body");
+      if (!data.students.length) {
+        body.innerHTML = '<tr><td colspan="7" class="text-center text-slate-500 py-8">No students yet.</td></tr>';
+        return;
+      }
+      body.innerHTML = data.students.map(s => `
+        <tr class="border-t border-border">
+          <td class="px-5 py-3 text-white">${s.name}</td>
+          <td class="px-5 py-3 mono text-slate-400">${s.reg_number || '-'}</td>
+          <td class="px-5 py-3 text-slate-400">${s.category}</td>
+          <td class="px-5 py-3 text-right mono text-neon">${s.score}</td>
+          <td class="px-5 py-3 text-right mono">${s.solved}</td>
+          <td class="px-5 py-3 text-right mono ${s.violations > 0 ? 'text-warn' : 'text-slate-600'}">${s.violations}</td>
+          <td class="px-5 py-3">${s.is_blocked ? '<span class="badge bg-danger/10 text-danger border border-danger">BLOCKED</span>' : '<span class="badge bg-neon/10 text-neon border border-neon">ACTIVE</span>'}</td>
+        </tr>
+      `).join("");
+    } catch (e) {}
+  }
+  refresh();
+  setInterval(refresh, 4000);
+</script>
+{% endblock %}
